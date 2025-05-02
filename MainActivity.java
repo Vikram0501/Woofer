@@ -1,7 +1,9 @@
-package com.example.testing;
+package com.example.woofer;
+
 
 import android.os.Bundle;
 import android.view.PixelCopy;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -10,6 +12,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+
+import com.example.woofer.R;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.json.JSONArray;
@@ -31,16 +36,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.loginactivity_main);
 
-        String username = "admin";
-        String password = DigestUtils.sha256Hex("admin");
+
+    }
+    public void login(View v){
+        TextView usernametxt = (TextView) findViewById(R.id.Usernametxt);
+        TextView passwordtxt = (TextView) findViewById(R.id.Passwordtxt);
+        String username = usernametxt.getText().toString();
+        String password = DigestUtils.sha256Hex(passwordtxt.getText().toString());
         String url = "https://lamp.ms.wits.ac.za/home/s2798790/login.php?username=" + username + "&password=" + password;
-
         OkHttpClient client = new OkHttpClient();
-
-        TextView txtview;
-        txtview = findViewById(R.id.txtView);
 
         Request request = new Request.Builder()
                 .url(url)
@@ -60,11 +66,12 @@ public class MainActivity extends AppCompatActivity {
                     MainActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if (responsebody == "ERR: ERR: USER NOT FOUND"){
-                                txtview.setText("user not found");
+                            if (responsebody.equals("ERR: USER NOT FOUND")){
+                                usernametxt.setText("");
+                                passwordtxt.setText("");
                             }
-                            else{
-                                txtview.setText("user found");
+                            else {
+                                usernametxt.setText("user found");
                             }
                         }
                     });
