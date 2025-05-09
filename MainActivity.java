@@ -15,9 +15,12 @@ import androidx.core.view.WindowInsetsCompat;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -28,6 +31,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
+    public User currentuser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()){
-                    final String responsebody = response.body().string();
+                    String responsebody = response.body().string();
                     MainActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -70,7 +74,24 @@ public class MainActivity extends AppCompatActivity {
                                 passwordtxt.setText("");
                             }
                             else {
-                                usernametxt.setText("user found");//**Placeholder**
+                                try {
+                                    JSONObject jo = new JSONObject(responsebody);
+                                    ArrayList<String> list = new ArrayList<String>();
+                                    Iterator<String> keys = jo.keys();
+                                    while (keys.hasNext()){
+                                        list.add(jo.getString(keys.next()));
+                                    }
+                                    int user_id = Integer.parseInt(list.get(0));
+                                    String username = list.get(1);
+                                    String password = list.get(2);
+                                    String email = list.get(3);
+
+                                    currentuser = new User(user_id, username, password, email);
+                                    currentuser.importposts();
+                                    usernametxt.setText(currentuser.getEmail());//**Placeholder**
+                                } catch (JSONException e) {
+                                    throw new RuntimeException(e);
+                                }
                             }
                         }
                     });
@@ -161,5 +182,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void loginpage(View v){
         setContentView(R.layout.loginactivity_main);
+    }
+
+    public void addpostpage(View v){
+        setContentView(R.layout.addpost_main);
     }
 }
