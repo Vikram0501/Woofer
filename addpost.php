@@ -6,9 +6,10 @@ $username = "s2798790";
 $password = "s2798790";
 $database = "d2798790";
 $conn = new mysqli("127.0.0.1", $username, $password, $database);
-$id = $_GET['id'] ?? '';
-$input = $_GET['input'] ?? '';
-$code = $_GET['code'] ?? '';
+$user_id = $_GET['user_id'] ?? '';
+$content = $_GET['content'] ?? '';
+$datetime = date("Y-m-d");
+$likes = 0;
 
 if ($conn->connect_error){
     die("Connection Error: " . $conn->connect_error);
@@ -18,4 +19,6 @@ if (empty($input) || empty($code) || empty($id)){
     die("ERR: MISSING FIELDS");
 }
 
+$addpost = $conn->prepare("INSERT INTO POSTS(USER_ID,CONTENT,UPLOAD_DATE_TIME,LIKES)  VALUES (?,?,?,?)");
+$addpost->bind_param("ssss",)
 ?>
